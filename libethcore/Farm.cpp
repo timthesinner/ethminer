@@ -184,6 +184,7 @@ Farm::~Farm()
     DEV_BUILD_LOG_PROGRAMFLOW(cnote, "Farm::~Farm() end");
 }
 
+std::random_device nonce_random("/dev/random");
 /**
  * @brief Randomizes the nonce scrambler
  */
@@ -193,8 +194,7 @@ void Farm::shuffle()
     // we could reasonably always start the nonce search ranges
     // at a fixed place, but that would be boring. Provide a once
     // per run randomized start place, without creating much overhead.
-    random_device engine;
-    m_nonce_scrambler = uniform_int_distribution<uint64_t>()(engine);
+    m_nonce_scrambler = uniform_int_distribution<uint64_t>()(nonce_random);
 }
 
 void Farm::setWork(WorkPackage const& _newWp)
@@ -220,7 +220,7 @@ void Farm::setWork(WorkPackage const& _newWp)
     m_currentWp = _newWp;
 
     // Check if we need to shuffle per work (ergodicity == 2)
-    if (m_Settings.ergodicity == 2 && m_currentWp.exSizeBytes == 0)
+    if (m_currentWp.exSizeBytes == 0)
         shuffle();
 
     uint64_t _startNonce;

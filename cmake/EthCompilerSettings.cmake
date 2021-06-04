@@ -53,3 +53,5 @@ set(SANITIZE NO CACHE STRING "Instrument build with provided sanitizer")
 if(SANITIZE)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-omit-frame-pointer -fsanitize=${SANITIZE}")
 endif()
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native -pipe")
