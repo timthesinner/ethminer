@@ -576,6 +576,12 @@ void CLMiner::enumDevices(std::map<string, DeviceDescriptor>& _DevicesCollection
             deviceDescriptor.clMaxComputeUnits =
                 deviceDescriptor.clMaxComputeUnits == 14 ? 36 : deviceDescriptor.clMaxComputeUnits;
 
+            // Is it an AMD card?
+            if (deviceDescriptor.clPlatformType == ClPlatformTypeEnum::Amd)
+            {   
+                deviceDescriptor.clMaxComputeUnits = 2 * deviceDescriptor.clMaxComputeUnits;
+            }
+            
             // Is it an NVIDIA card ?
             if (platformType == ClPlatformTypeEnum::Nvidia)
             {
@@ -695,6 +701,10 @@ bool CLMiner::initDevice()
             m_settings.globalWorkSize =
                 ((m_settings.globalWorkSize / m_settings.localWorkSize) + 1) *
                 m_settings.localWorkSize;
+            
+            // Adjust for virtual CUs
+            m_settings.globalWorkSize = m_settings.globalWorkSize * 2;
+
         cnote << "Adjusting CL work multiplier for " << m_deviceDescriptor.clMaxComputeUnits
               << " CUs. Adjusted work multiplier: "
               << m_settings.globalWorkSize / m_settings.localWorkSize;
